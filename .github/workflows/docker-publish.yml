@@ -19,7 +19,8 @@ env:
 jobs:
   semver:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: write
     outputs:
       new_version: ${{ steps.bump-semver.outputs.new_version }}
     steps:
