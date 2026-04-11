@@ -52,11 +52,11 @@ jobs:
         id: set-new-version
         run: echo "new_version=${{ steps.bump-semver.outputs.new_version }}" >> $GITHUB_ENV
 
-      - name: Push New Tag
-        uses: actions-ecosystem/action-push-tag@v1
-        with:
-          tag: ${{ env.new_version }}
-          message: '${{ env.new_version }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
+#      - name: Push New Tag
+#        uses: actions-ecosystem/action-push-tag@v1
+#        with:
+#          tag: ${{ env.new_version }}
+#          message: '${{ env.new_version }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
 
 
   docker:
