@@ -155,7 +155,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: azure/setup-helm@v5.0.0
-      - run: helm package --app-version test charts/k8s-backup/
+      - run: helm package --app-version ${{ needs.semver.outputs.new_version }} --version ${{ needs.semver.outputs.new_version }}  -d .cr-release-packages charts/k8s-backup/
 
       - name: Configure Git
         run: |
