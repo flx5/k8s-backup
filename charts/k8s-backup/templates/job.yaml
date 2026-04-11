@@ -57,7 +57,7 @@ spec:
 
               class MyBackup(BackupDefinition):
                 def prepare_snapshots(self, ctx: BackupContext) -> dict[str, SnapshotInfo]:
-                  {{- .Values.prepareBackupScript | nindent 14 }}
+                  {{- .Values.prepareBackupScript | nindent 18 }}
 
                 def scratch_volume(self) -> str | None:
                     return {{ if .Values.scratch.enabled }} {{ include "k8s-backup.scratchName" . | quote }} {{ else }} None {{ end }}
