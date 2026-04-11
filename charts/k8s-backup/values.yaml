@@ -1,5 +1,5 @@
 image:
-  repository: ghcr.io/flx5/k8s-borg/backup
+  repository: ghcr.io/flx5/k8s-backup
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
