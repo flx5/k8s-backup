@@ -95,28 +95,16 @@ class BackupJob:
             w.stop()
 
         print("Logs ended")
-        w = watch.Watch()
 
-        # Stream events for pods in the given namespace
-        # Use v1.list_pod_for_all_namespaces for cluster-wide watching
-        selector = "metadata.name="+job.metadata.name
+        # Update to the latest job resource_version here
+        job = self.batch_v1.read_namespaced_job(job.metadata.name, self.namespace)
 
-        for event in w.stream(self.batch_v1.list_namespaced_job,
-                              resource_version=job.metadata.resource_version,
-                              field_selector=selector,
-                              namespace=self.namespace):
-            obj = event['object']
+        end_time = time()
+        elapsed_time = end_time - start_time
+        print(f"Job {job.metadata.name} finished in {elapsed_time} seconds")
 
-            if obj.status.succeeded is not None or \
-                    obj.status.failed is not None:
-                w.stop()
-                end_time = time()
-
-                elapsed_time = end_time - start_time
-                print(f"Job {job.metadata.name} finished in {elapsed_time} seconds")
-
-                if obj.status.failed is not None:
-                    raise Exception(f'Job {job.metadata.name} failed')
+        if job.status.failed is not None:
+            raise Exception(f'Job {job.metadata.name} failed')
 
     def delete_owned_jobs(self):
         self.batch_v1.delete_collection_namespaced_job(
