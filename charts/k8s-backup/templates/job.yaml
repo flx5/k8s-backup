@@ -1,67 +1,73 @@
 apiVersion: batch/v1
-kind: Job
+kind: CronJob
 metadata:
   name: {{ include "k8s-backup.fullname" . }}
 spec:
-  template:
+  schedule: "0 1 * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
     spec:
-      serviceAccountName: {{ include "k8s-backup.fullname" . }}
-      containers:
-      - name: backup
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        env:
-          - name: REPOSITORY_USERNAME
-            valueFrom:
-              secretKeyRef:
-                key: username
-                name: {{ .Values.repository.secret }}
-                optional: true
-          - name: REPOSITORY_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: password
-                name: {{ .Values.repository.secret }}
-          - name: REPOSITORY_HOSTNAME
-            valueFrom:
-              secretKeyRef:
-                key: hostname
-                name: {{ .Values.repository.secret }}
-                optional: true
-          - name: SERVER_FINGERPRINT
-            valueFrom:
-              secretKeyRef:
-                key: fingerprint
-                name: {{ .Values.repository.secret }}
-                optional: true
-          - name: REPOSITORY_URL
-            valueFrom:
-              secretKeyRef:
-                key: url
-                name: {{ .Values.repository.secret }}
-          - name: KOPIA_IMAGE
-            value: "{{ .Values.kopia.image.repository }}:{{ .Values.kopia.image.tag }}"
-        command:
-        - "python3"
-        - -u
-        - -c
-        - |
-          from backup import BackupContext, SnapshotInfo
-          from main import BackupDefinition, create_backup
+      template:
+        spec:
+          serviceAccountName: {{ include "k8s-backup.fullname" . }}
+          containers:
+          - name: backup
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            env:
+              - name: REPOSITORY_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    name: {{ .Values.repository.secret }}
+                    optional: true
+              - name: REPOSITORY_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: password
+                    name: {{ .Values.repository.secret }}
+              - name: REPOSITORY_HOSTNAME
+                valueFrom:
+                  secretKeyRef:
+                    key: hostname
+                    name: {{ .Values.repository.secret }}
+                    optional: true
+              - name: SERVER_FINGERPRINT
+                valueFrom:
+                  secretKeyRef:
+                    key: fingerprint
+                    name: {{ .Values.repository.secret }}
+                    optional: true
+              - name: REPOSITORY_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: url
+                    name: {{ .Values.repository.secret }}
+              - name: KOPIA_IMAGE
+                value: "{{ .Values.kopia.image.repository }}:{{ .Values.kopia.image.tag }}"
+            command:
+            - "python3"
+            - -u
+            - -c
+            - |
+              from backup import BackupContext, SnapshotInfo
+              from main import BackupDefinition, create_backup
 
 
-          class MyBackup(BackupDefinition):
-            def prepare_snapshots(self, ctx: BackupContext) -> dict[str, SnapshotInfo]:
-              {{- .Values.prepareBackupScript | nindent 14 }}
+              class MyBackup(BackupDefinition):
+                def prepare_snapshots(self, ctx: BackupContext) -> dict[str, SnapshotInfo]:
+                  {{- .Values.prepareBackupScript | nindent 14 }}
 
-            def scratch_volume(self) -> str | None:
-                return {{ if .Values.scratch.enabled }} {{ include "k8s-backup.scratchName" . | quote }} {{ else }} None {{ end }}
-        
-            def cache_volume(self) -> str | None:
-                return "{{ include "k8s-backup.fullname" . }}-cache"
-        
-            def application(self) -> str | None:
-                return {{ .Release.Name | quote }}
+                def scratch_volume(self) -> str | None:
+                    return {{ if .Values.scratch.enabled }} {{ include "k8s-backup.scratchName" . | quote }} {{ else }} None {{ end }}
 
-          create_backup(MyBackup())
-      restartPolicy: Never
-  backoffLimit: 0
+                def cache_volume(self) -> str | None:
+                    return "{{ include "k8s-backup.fullname" . }}-cache"
+
+                def application(self) -> str | None:
+                    return {{ .Release.Name | quote }}
+
+              create_backup(MyBackup())
+          restartPolicy: Never
+      backoffLimit: 0
