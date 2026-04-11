@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   k8s-backup:
   - apiVersion: v2
+    appVersion: 0.1.16
+    created: "2026-04-11T19:15:27.77958101Z"
+    description: A Helm chart for Kubernetes
+    digest: 49f3135e1a3110f53f54ef52d5af892f54d2768fe609ef9ee9ccd30b6ebbeadb
+    name: k8s-backup
+    type: application
+    urls:
+    - https://github.com/flx5/k8s-backup/releases/download/0.1.16/k8s-backup-0.1.16.tgz
+    version: 0.1.16
+  - apiVersion: v2
     appVersion: 0.1.15
     created: "2026-04-11T19:12:51.41979815Z"
     description: A Helm chart for Kubernetes
@@ -111,4 +121,4 @@ entries:
     urls:
     - https://github.com/flx5/k8s-backup/releases/download/k8s-backup-0.1.0/k8s-backup-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-11T19:12:51.419873029Z"
+generated: "2026-04-11T19:15:27.779625373Z"
