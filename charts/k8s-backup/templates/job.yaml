@@ -38,6 +38,8 @@ spec:
               secretKeyRef:
                 key: url
                 name: {{ .Values.repository.secret }}
+          - name: KOPIA_IMAGE
+            value: "{{ .Values.kopia.image.repository }}:{{ .Values.kopia.image.tag }}"
         command:
         - "python3"
         - -u

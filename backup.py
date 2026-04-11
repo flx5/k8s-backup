@@ -204,7 +204,7 @@ class Backup:
         return ExposedSnapshotPvc(response.metadata.name, snapshot)
 
     def run_kopia(self, application: str, scratch_volume: str, cache_volume: str, snapshot_pvcs: dict[str, ExposedSnapshotPvc]):
-        image = "kopia/kopia:0.22.3"
+        image = os.environ.get("KOPIA_IMAGE", "kopia/kopia:0.22.3")
 
         repository = os.environ["REPOSITORY_URL"]
         username = os.environ.get("REPOSITORY_USERNAME", "default")
