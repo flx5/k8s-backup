@@ -1,0 +1,23 @@
+image:
+  repository: ghcr.io/flx5/k8s-borg/backup
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "main@sha256:48c5af20e759d7278fff1917fbb1e109bdabb942316d92feb93bebd4ecf237fc"
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+scratch:
+  enabled: true
+
+prepareBackupScript: |
+  return {}
+
+repository:
+  secret: ""
+
+# TODO Release helm chart with matching image tag
