@@ -154,13 +154,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: azure/setup-helm@v5.0.0
-      - run: helm package --app-version ${{ needs.semver.outputs.new_version }} --version ${{ needs.semver.outputs.new_version }}  -d .cr-release-packages charts/k8s-backup/
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Update Chart versions
+        run: |
+          sed -i "s/^version: .*/version: ${{ needs.semver.outputs.new_version }}/" charts/k8s-backup/Chart.yaml
+          sed -i "s/^appVersion: .*/appVersion: \"${{ needs.semver.outputs.new_version }}\"/" charts/k8s-backup/Chart.yaml
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
