@@ -5,6 +5,8 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+jobLabels: {}
+
 kopia:
   image:
     repository: kopia/kopia
