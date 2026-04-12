@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v5
+        with:
+          fetch-tags: true
 
       - name: Get Lastest Tag
         id: get-latest-tag
