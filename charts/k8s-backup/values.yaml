@@ -5,6 +5,10 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+job:
+  labels: {}
+  schedule: "0 1 * * *"
+
 kopia:
   image:
     repository: kopia/kopia
