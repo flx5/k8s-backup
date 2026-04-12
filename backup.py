@@ -1,7 +1,7 @@
 import os
 
 from kubernetes import client
-from kubernetes.client import CoreV1Api
+from kubernetes.client import CoreV1Api, V1Scale
 from kubernetes.stream import stream
 from kubernetes.watch import watch
 
@@ -21,6 +21,43 @@ class ExposedSnapshotPvc:
     def __init__(self, pvc_name, snapshot: SnapshotInfo):
         self.pvc_name = pvc_name
         self.snapshot = snapshot
+
+class Scaler:
+    def __init__(self, apps_v1, namespace, deployment_name):
+        self.apps_v1 = apps_v1
+        self.namespace = namespace
+        self.deployment_name = deployment_name
+
+    def _scale(self, count):
+        body = {"spec": {"replicas": count}}
+        self.apps_v1.patch_namespaced_deployment_scale(name=self.deployment_name, namespace=self.namespace, body=body)
+
+        w = watch.Watch()
+        # We watch the deployment list but filter by the specific name
+        for event in w.stream(self.apps_v1.list_namespaced_deployment, namespace=self.namespace,
+                              field_selector=f"metadata.name={self.deployment_name}", timeout_seconds=120):
+            deployment = event['object']
+            # Check the status reported by the controller
+            current_replicas = deployment.status.replicas or 0
+
+            print(f"Current status replicas: {current_replicas}")
+
+            if current_replicas == count:
+                print(f"Successfully scaled to {count} replicas.")
+                w.stop()
+                break
+
+    def __enter__(self):
+        self.previous: V1Scale = self.apps_v1.read_namespaced_deployment_scale(name=self.deployment_name,
+                                                                          namespace=self.namespace)
+        body = {"spec": {"replicas": 0}}
+        self.apps_v1.patch_namespaced_deployment_scale(name=self.deployment_name, namespace=self.namespace, body=body)
+        return self
+
+    def __exit__(self, exception_type, exception_value, exception_traceback):
+        body = {"spec": {"replicas": self.previous.spec.replicas}}
+        self.apps_v1.patch_namespaced_deployment_scale(name=self.deployment_name, namespace=self.namespace, body=body)
+
 
 class Backup:
     def __init__(self, api_client, owner, namespace):
@@ -60,6 +97,9 @@ class Backup:
                       stdout=True, tty=False)
 
         return resp
+
+    def shutdown_deployment(self, deployment_name):
+        return Scaler(self.apps_v1, self.namespace, deployment_name)
 
     def selector_to_query(self, selector):
         selector_str = ",".join([f"{k}={v}" for k, v in selector.items()])

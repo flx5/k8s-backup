@@ -6,6 +6,7 @@ image:
   tag: ""
 
 job:
+  # Can use https://kueue.sigs.k8s.io/docs/tasks/run/run_cronjobs/ to make sure repositories are updated sequentially
   labels: {}
   schedule: "0 1 * * *"
 
