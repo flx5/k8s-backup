@@ -40,10 +40,8 @@ class Scaler:
             # Check the status reported by the controller
             current_replicas = deployment.status.replicas or 0
 
-            print(f"Current status replicas: {current_replicas}")
-
             if current_replicas == count:
-                print(f"Successfully scaled to {count} replicas.")
+                print(f"Successfully scaled {self.deployment_name} to {count} replicas.")
                 w.stop()
                 break
 
