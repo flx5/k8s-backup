@@ -50,13 +50,11 @@ class Scaler:
     def __enter__(self):
         self.previous: V1Scale = self.apps_v1.read_namespaced_deployment_scale(name=self.deployment_name,
                                                                           namespace=self.namespace)
-        body = {"spec": {"replicas": 0}}
-        self.apps_v1.patch_namespaced_deployment_scale(name=self.deployment_name, namespace=self.namespace, body=body)
+        self._scale(count=0)
         return self
 
     def __exit__(self, exception_type, exception_value, exception_traceback):
-        body = {"spec": {"replicas": self.previous.spec.replicas}}
-        self.apps_v1.patch_namespaced_deployment_scale(name=self.deployment_name, namespace=self.namespace, body=body)
+        self._scale(count=self.previous.spec.replicas)
 
 
 class Backup:
