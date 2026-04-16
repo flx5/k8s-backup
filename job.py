@@ -94,7 +94,7 @@ class BackupJob:
         finally:
             w.stop()
 
-        print("Logs ended")
+        print("==============================")
 
         # Update to the latest job resource_version here
         job = self.batch_v1.read_namespaced_job(job.metadata.name, self.namespace)
