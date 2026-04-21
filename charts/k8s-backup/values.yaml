@@ -31,3 +31,4 @@ repository:
   secret: ""
 
 skipCleanup: false
+showProgress: false

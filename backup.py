@@ -263,10 +263,14 @@ class Backup:
 
         args = " ".join(args)
 
+        no_progress = "--no-progress"
+        if os.environ.get('KOPIA_PROGRESS') == 'true':
+            no_progress = ""
+
         command = [
             "bash", "-c", f"""
                 kopia repository connect server {args}\
-                && kopia snapshot create /data --override-source=/k8s/{self.namespace}/{application}/ --no-progress
+                && kopia snapshot create /data --override-source=/k8s/{self.namespace}/{application}/ {no_progress}
                 """
         ]
 
