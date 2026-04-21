@@ -52,9 +52,9 @@ spec:
               - name: KOPIA_IMAGE
                 value: "{{ .Values.kopia.image.repository }}:{{ .Values.kopia.image.tag }}"
               - name: SKIP_CLEANUP
-                value: {{ .Values.skipCleanup }}
+                value: {{ .Values.skipCleanup | quote }}
               - name: KOPIA_PROGRESS
-                value: {{ .Values.showProgress }}
+                value: {{ .Values.showProgress | quote }}
             command:
             - "python3"
             - -u
