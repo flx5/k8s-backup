@@ -51,6 +51,8 @@ spec:
                     name: {{ .Values.repository.secret }}
               - name: KOPIA_IMAGE
                 value: "{{ .Values.kopia.image.repository }}:{{ .Values.kopia.image.tag }}"
+              - name: SKIP_CLEANUP
+                value: {{ .Values.skipCleanup }}
             command:
             - "python3"
             - -u

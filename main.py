@@ -44,4 +44,6 @@ def create_backup(definition: BackupDefinition):
         snapshots = definition.prepare_snapshots(ctx)
         exposes = backup.expose_snapshots(snapshots)
         backup.run_kopia(application, scratch_volume, definition.cache_volume(), exposes)
-        backup.cleanup()
+
+        if not os.environ.get("SKIP_CLEANUP", "False").lower() in ('true', '1', 't'):
+            backup.cleanup()

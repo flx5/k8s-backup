@@ -30,4 +30,4 @@ prepareBackupScript: |
 repository:
   secret: ""
 
-# TODO Release helm chart with matching image tag
+skipCleanup: false

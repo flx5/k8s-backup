@@ -54,7 +54,7 @@ class BackupJob:
         # Create the specification of deployment
         spec = client.V1JobSpec(
             template=template,
-            backoff_limit=1)
+            backoff_limit=0)
         # Instantiate the job object
         job = client.V1Job(
             api_version="batch/v1",
