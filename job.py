@@ -96,6 +96,14 @@ class BackupJob:
 
         print("="*30)
 
+        # Ensure that the job actually is finished. Sometimes log streaming stops but the pod is actually still running.
+        while True:
+            pod = self.core_v1.read_namespaced_pod(name=pod_name, namespace=self.namespace)
+            if pod.status.phase != "Running":
+                break
+            print(f"Waiting for pod {pod_name} to terminate. Status: {pod.status.phase}")
+            sleep(10)
+
         # Update to the latest job resource_version here
         job = self.batch_v1.read_namespaced_job(job.metadata.name, self.namespace)
 
